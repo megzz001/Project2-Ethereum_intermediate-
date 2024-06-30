@@ -1,28 +1,81 @@
-REMIX DEFAULT WORKSPACE
+# Secure Balance Management
 
-Remix default workspace is present when:
-i. Remix loads for the very first time 
-ii. A new workspace is created with 'Default' template
-iii. There are no files existing in the File Explorer
+This Solidity program is a secure balance management contract that demonstrates basic balance operations such as increasing, decreasing, and resetting a balance with appropriate checks and restrictions.
 
-This workspace contains 3 directories:
+## Description
 
-1. 'contracts': Holds three contracts with increasing levels of complexity.
-2. 'scripts': Contains four typescript files to deploy a contract. It is explained below.
-3. 'tests': Contains one Solidity test file for 'Ballot' contract & one JS test file for 'Storage' contract.
+This contract is designed to manage a balance securely. It includes functions to increase and decrease the balance, with checks to ensure valid operations. The balance can only be reset by the contract owner. This contract serves as an example of secure Solidity programming practices, including the use of require, assert, and revert statements.
 
-SCRIPTS
+## Getting Started
 
-The 'scripts' folder has four typescript files which help to deploy the 'Storage' contract using 'web3.js' and 'ethers.js' libraries.
+### Prequisites
+To run this program, you will need:
 
-For the deployment of any other contract, just update the contract's name from 'Storage' to the desired contract and provide constructor arguments accordingly 
-in the file `deploy_with_ethers.ts` or  `deploy_with_web3.ts`
+A modern web browser
+Internet access
+Basic understanding of Solidity and Ethereum smart contracts
 
-In the 'tests' folder there is a script containing Mocha-Chai unit tests for 'Storage' contract.
+### Executing program
 
-To run a script, right click on file name in the file explorer and click 'Run'. Remember, Solidity file must already be compiled.
-Output from script will appear in remix terminal.
+Go to the Remix website: Remix.
 
-Please note, require/import is supported in a limited manner for Remix supported modules.
-For now, modules supported by Remix are ethers, web3, swarmgw, chai, multihashes, remix and hardhat only for hardhat.ethers object/plugin.
-For unsupported modules, an error like this will be thrown: '<module_name> module require is not supported by Remix IDE' will be shown.
+Create a new file by clicking on the "+" icon in the left-hand sidebar. Save the file with a .sol extension (e.g., SecureBalanceManagement.sol).
+
+```javascript
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.7.0 <0.9.0;
+
+contract SecureBalanceManagement {
+
+    uint public balance;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+        balance = 0;
+    }
+
+    function increaseBalance(uint amount) public {
+        // Ensure the amount is greater than zero
+        require(amount > 0, "Amount must be greater than zero");
+        balance += amount;
+    }
+
+    function decreaseBalance(uint amount) public {
+        // Ensure the amount is less than or equal to the balance
+        require(amount <= balance, "Insufficient balance");
+
+        // Use assert to check for underflow (should never happen due to the require above)
+        uint newBalance = balance - amount;
+        assert(newBalance <= balance);
+
+        balance = newBalance;
+    }
+
+    function resetBalance() public {
+        // Ensure the caller is the owner
+        require(msg.sender == owner, "Only the owner can reset the balance");
+
+        // Use revert with a custom error message if the condition is met
+        if (balance == 0) {
+            revert("Balance is already zero");
+        }
+
+        balance = 0;
+    }
+}
+
+
+```
+
+To compile the code, click on the "Solidity Compiler" tab in the left-hand sidebar. Make sure the "Compiler" option is set to a compatible version (e.g., 0.8.4), and then click on the "Compile SecureBalanceManagement.sol" button.
+
+Once the code is compiled, deploy the contract by clicking on the "Deploy & Run Transactions" tab in the left-hand sidebar. Select the SecureBalanceManagement contract from the dropdown menu, and then click on the "Deploy" button.
+
+After the contract is deployed, interact with it by calling the functions increaseBalance, decreaseBalance, and resetBalance as needed.
+
+## Authors
+
+Megha  
+[meghagusain03@gmail.com]
+
